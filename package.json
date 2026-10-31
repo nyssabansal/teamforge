@@ -1,0 +1,34 @@
+{
+  "name": "teamforge",
+  "version": "1.0.0",
+  "description": "Event / hackathon team-matching platform — DBMS Level 3 project (PostgreSQL + pgvector + MongoDB, Next.js)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:schema": "node scripts/db.mjs schema",
+    "db:seed": "node scripts/db.mjs seed",
+    "db:reset": "node scripts/db.mjs reset",
+    "db:test": "node scripts/db.mjs test",
+    "seed:sql": "node scripts/gen-seed-sql.mjs",
+    "seed:mongo": "node scripts/seed-mongo.mjs",
+    "embed": "node scripts/embed-all.mjs",
+    "setup": "npm run db:reset && npm run seed:mongo && npm run embed"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.3.1",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.13",
+    "mongodb": "^7.7.0",
+    "next": "^16.4.3",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  }
+}
