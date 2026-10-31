@@ -1,0 +1,22 @@
+flowchart LR
+  B["Browser<br/>Next.js pages (React)"]
+  subgraph APP["Next.js server"]
+    P["proxy.js<br/>role gating for pages"]
+    API["Route handlers /api/*<br/>zod validation · requireUser()"]
+    EMB["lib/embeddings.js<br/>MiniLM-L6-v2 (transformers.js)"]
+  end
+  subgraph PG["PostgreSQL 16"]
+    T["Relational tables<br/>keys · CHECKs · composite FKs"]
+    TR["Triggers · stored functions<br/>procedures · views · FTS"]
+    V["pgvector<br/>profile/team embeddings · HNSW"]
+  end
+  M[("MongoDB<br/>participant_profiles")]
+
+  B -- "HTTPS, httpOnly JWT cookie" --> P --> API
+  API -- "parameterised SQL<br/>transactions" --> T
+  T --- TR
+  API -- "profile docs, aggregation" --> M
+  API -. "after write" .-> EMB
+  EMB -- "reads profile text" --> M
+  EMB -- "upsert vector(384)" --> V
+  API -- "cosine kNN (<=>)" --> V

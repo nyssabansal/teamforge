@@ -1,0 +1,122 @@
+erDiagram
+  USERS ||--o{ EVENTS : organizes
+  USERS ||--o{ USER_SKILLS : has
+  SKILLS ||--o{ USER_SKILLS : "tagged in"
+  USERS ||--o{ REGISTRATIONS : makes
+  EVENTS ||--o{ REGISTRATIONS : receives
+  EVENTS ||--o{ TEAMS : contains
+  USERS ||--o{ TEAMS : leads
+  TEAMS ||--|{ TEAM_MEMBERS : has
+  REGISTRATIONS ||--o| TEAM_MEMBERS : "becomes"
+  TEAMS ||--o{ TEAM_REQUIRED_SKILLS : needs
+  SKILLS ||--o{ TEAM_REQUIRED_SKILLS : "required as"
+  TEAMS ||--o{ JOIN_REQUESTS : receives
+  USERS ||--o{ JOIN_REQUESTS : sends
+  EVENTS ||--o{ EVENT_JUDGES : assigns
+  USERS ||--o{ EVENT_JUDGES : judges
+  TEAMS ||--o| SUBMISSIONS : submits
+  SUBMISSIONS ||--o{ SCORES : receives
+  USERS ||--o{ SCORES : gives
+  USERS ||--o| PROFILE_EMBEDDINGS : "embedded as"
+  TEAMS ||--o| TEAM_EMBEDDINGS : "embedded as"
+
+  USERS {
+    serial user_id PK
+    varchar name
+    citext email UK
+    varchar password_hash "bcrypt"
+    varchar role "participant|organizer|judge"
+    boolean is_active
+    timestamptz created_at
+  }
+  EVENTS {
+    serial event_id PK
+    int organizer_id FK
+    varchar title
+    text description
+    varchar theme
+    varchar venue
+    date start_date
+    date end_date
+    date reg_deadline
+    smallint min_team_size
+    smallint max_team_size
+    varchar status
+    tsvector search_tsv "generated"
+  }
+  SKILLS {
+    serial skill_id PK
+    varchar name UK
+    varchar category
+  }
+  USER_SKILLS {
+    int user_id PK,FK
+    int skill_id PK,FK
+    smallint proficiency "1-5"
+  }
+  REGISTRATIONS {
+    serial reg_id PK
+    int event_id FK
+    int user_id FK
+    boolean looking_for_team
+    timestamptz registered_at
+  }
+  TEAMS {
+    serial team_id PK
+    int event_id FK
+    int leader_id FK
+    varchar team_name
+    text pitch
+    smallint capacity
+    boolean is_locked
+    numeric balance_score
+  }
+  TEAM_MEMBERS {
+    int team_id PK,FK
+    int user_id PK,FK
+    int event_id FK
+    timestamptz joined_at
+  }
+  TEAM_REQUIRED_SKILLS {
+    int team_id PK,FK
+    int skill_id PK,FK
+    smallint min_proficiency
+  }
+  JOIN_REQUESTS {
+    serial request_id PK
+    int team_id FK
+    int user_id FK
+    varchar status
+    varchar message
+    timestamptz created_at
+    timestamptz responded_at
+  }
+  EVENT_JUDGES {
+    int event_id PK,FK
+    int judge_id PK,FK
+  }
+  SUBMISSIONS {
+    serial submission_id PK
+    int team_id FK,UK
+    varchar project_title
+    text summary
+    varchar repo_url
+    timestamptz submitted_at
+  }
+  SCORES {
+    int submission_id PK,FK
+    int judge_id PK,FK
+    varchar criterion PK
+    smallint score "0-10"
+  }
+  PROFILE_EMBEDDINGS {
+    int user_id PK,FK
+    vector embedding "384-d"
+    char source_hash
+    varchar model
+  }
+  TEAM_EMBEDDINGS {
+    int team_id PK,FK
+    vector embedding "384-d"
+    char source_hash
+  }
